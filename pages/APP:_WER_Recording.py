@@ -1,22 +1,18 @@
 import streamlit as st
-from bokeh.models.widgets import Button
-from bokeh.models import CustomJS
-from streamlit_bokeh_events import streamlit_bokeh_events
+import sounddevice as sd
+import wavio
 
-button = Button(label="Click me!", width=300)
-button.js_on_event("button_click", CustomJS(code="""
-    console.log('button clicked');
-    """))
+def record(duration=5, fs=44100, save_path='output.wav'):
+    """Record audio for a given duration and sampling rate."""
+    recording = sd.rec(int(duration * fs), samplerate=fs, channels=2)
+    sd.wait()  # Wait until recording is finished
+    wavio.write(save_path, recording, fs, sampwidth=2)
+    return save_path
 
-# Ensure the event argument is correct as per the latest library version
-result = streamlit_bokeh_events(
-    bokeh_model=button,  # This might be 'bokeh_objects' or another parameter based on version
-    events="button_click",
-    key="click",
-    refresh_on_update=True,
-    debounce_time=500
-)
+st.markdown("## Audio Recorder")
+record_button = st.button("Record Audio")
 
-if result:
-    if "button_click" in result:
-        st.write("Button was clicked")
+if record_button:
+    # Assuming 5 seconds of recording
+    path = record(duration=5)
+    st.audio(path)
