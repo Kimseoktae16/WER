@@ -106,7 +106,7 @@ if st.button("Step 2. Display Feedback"):
     - **Moderate WER (20% to 50%)**: Moderate accuracy, noticeable errors that may affect understanding of certain parts of the text.
     - **High WER (over 50%)**: Poor accuracy, significant errors likely make the transcription unreliable without extensive corrections.
     
-    _Note:_The lower the WER, the better the performance of the speech recognition system. A high WER may suggest issues with audio quality, speaker's pronunciation, or the complexity of the language used.
+    ❗Note: The lower the WER, the better the performance of the speech recognition system. A high WER may suggest issues with audio quality, speaker's pronunciation, or the complexity of the language used.
     """
     
     st.info(interpretation_text)
