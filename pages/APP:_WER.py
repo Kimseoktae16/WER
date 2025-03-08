@@ -1,7 +1,13 @@
 import streamlit as st
 import speech_recognition as sr
 from difflib import SequenceMatcher
+import re
 
+# Normalize text by converting to lowercase and removing non-alphanumeric characters
+def normalize_text(text):
+    return re.sub(r'[^\w\s]', '', text.lower())
+
+# Function to recognize speech from an audio file
 def recognize_audio(audio_file):
     recognizer = sr.Recognizer()
     with sr.AudioFile(audio_file) as source:
@@ -14,7 +20,10 @@ def recognize_audio(audio_file):
     except sr.RequestError as e:
         return f"Could not request results from Google Speech Recognition service; {e}"
 
+# Calculate the Word Error Rate (WER)
 def calculate_wer(original, recognized):
+    original = normalize_text(original)
+    recognized = normalize_text(recognized)
     original_words = original.split()
     recognized_words = recognized.split()
     sm = SequenceMatcher(None, original_words, recognized_words)
@@ -26,23 +35,23 @@ def calculate_wer(original, recognized):
             insertions += (b1 - b0)
         elif opcode == 'delete':
             deletions += (a1 - a0)
-    wer = (substitutions + deletions + insertions) / len(original_words)
+    wer = (substitutions + deletions + insertions) / len(original_words) if original_words else 0
     return wer * 100  # percentage
 
+# Highlight differences with emphasis
 def highlight_differences(original, recognized):
+    original = normalize_text(original)
+    recognized = normalize_text(recognized)
     original_words = original.split()
     recognized_words = recognized.split()
     sm = SequenceMatcher(None, original_words, recognized_words)
     result = []
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
         if tag == 'equal':
-            result.append(' '.join(original_words[i1:i2]))  # Ensure these are strings
-        elif tag in ['replace', 'delete']:
-            result.append("<em>" + ' '.join(original_words[i1:i2]) + "</em>")  # Mark differences in italics
-        if tag == 'insert':
-            result.append("<em>" + ' '.join(recognized_words[j1:j2]) + "</em>")
-    return ' '.join(result)  # Join only string elements
-
+            result.append(original_words[i1:i2])
+        else:
+            result.append(f"<em>{' '.join(original_words[i1:i2])}</em>")
+    return ' '.join(result)
 
 st.title('Speech Recognition Feedback Tool')
 
