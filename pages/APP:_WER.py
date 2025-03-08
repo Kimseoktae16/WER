@@ -38,25 +38,21 @@ def calculate_wer(original, recognized):
     wer = (substitutions + deletions + insertions) / len(original_words) if original_words else 0
     return wer * 100  # percentage
 
-# Highlight differences and categorize them
+# Categorize differences and format output
 def categorize_differences(original, recognized):
     original = normalize_text(original)
     recognized = normalize_text(recognized)
     original_words = original.split()
     recognized_words = recognized.split()
     sm = SequenceMatcher(None, original_words, recognized_words)
-    insertions = []
-    deletions = []
-    substitutions = []
+    insertions, deletions, substitutions = [], [], []
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
         if tag == 'insert':
             insertions.append(' '.join(recognized_words[j1:j2]))
         elif tag == 'delete':
             deletions.append(' '.join(original_words[i1:i2]))
         elif tag == 'replace':
-            original_segment = ' '.join(original_words[i1:i2])
-            recognized_segment = ' '.join(recognized_words[j1:j2])
-            substitutions.append(f"Original: {original_segment}, Recognized: {recognized_segment}")
+            substitutions.append(f"Original: {' '.join(original_words[i1:i2])}, Recognized: {' '.join(recognized_words[j1:j2])}")
     return insertions, deletions, substitutions
 
 st.title('Speech Recognition Feedback Tool')
@@ -78,7 +74,19 @@ if submit_button and audio_file and expected_text:
 
 if st.button("Step 2. Display Feedback"):
     st.write("Your speech recognized as:", st.session_state['recognized_text'])
-    st.write("Insertion Errors:", ', '.join(st.session_state['insertions']))
-    st.write("Deletion Errors:", ', '.join(st.session_state['deletions']))
-    st.write("Substitution Errors:", ', '.join(st.session_state['substitutions']))
+    if st.session_state['insertions']:
+        st.write("Insertion Errors:", ', '.join(st.session_state['insertions']))
+    else:
+        st.write("Insertion Errors: (None)")
+
+    if st.session_state['deletions']:
+        st.write("Deletion Errors:", ', '.join(st.session_state['deletions']))
+    else:
+        st.write("Deletion Errors: (None)")
+
+    if st.session_state['substitutions']:
+        st.write("Substitution Errors:", ', '.join(st.session_state['substitutions']))
+    else:
+        st.write("Substitution Errors: (None)")
+
     st.write("Word Error Rate (WER):", f"{st.session_state['wer']:.2f}%")
