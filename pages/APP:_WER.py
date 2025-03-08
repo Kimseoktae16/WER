@@ -48,16 +48,18 @@ def highlight_differences(original, recognized):
     result = []
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
         if tag == 'equal':
-            result.append(' '.join(original_words[i1:i2]))  # Convert list of words to a single string
+            result.append(' '.join(original_words[i1:i2]))  # Keep equal words as they are
         elif tag == 'replace':
+            # Cross out only the replaced parts, showing both original and recognized segments
             original_segment = ' '.join(original_words[i1:i2])
             recognized_segment = ' '.join(recognized_words[j1:j2])
-            result.append(f"<del>{original_segment}</del>")  # Crossout the original segment
-            result.append(f"<del>{recognized_segment}</del>")  # Crossout the recognized segment
+            result.append(f"<del>{original_segment}</del><ins>{recognized_segment}</ins>")
         elif tag == 'delete':
-            result.append(f"<del>{' '.join(original_words[i1:i2])}</del>")  # Crossout the deleted segment
+            # Cross out deleted segments
+            result.append(f"<del>{' '.join(original_words[i1:i2])}</del>")
         elif tag == 'insert':
-            result.append(f"<del>{' '.join(recognized_words[j1:j2])}</del>")  # Crossout the inserted segment
+            # Insert new segments not in the original
+            result.append(f"<ins>{' '.join(recognized_words[j1:j2])}</ins>")
     return ' '.join(result)  # Ensure all elements are strings
 
 
