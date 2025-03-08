@@ -59,6 +59,7 @@ def categorize_differences(original, recognized):
     return insertions, deletions, substitutions
 
 st.markdown('### 🍃 WER Speech Feedback')
+st.caption("Word Error Rate calculation: The lower the WER, the better your performance. 0% means no error :-)")
 
 with st.form("record_audio"):
     audio_file = st.file_uploader("Upload your audio file here:", type=['wav', 'mp3'])
@@ -106,7 +107,7 @@ if st.button("Step 2. Display Feedback"):
     - **Moderate WER (20% to 50%)**: Moderate accuracy, noticeable errors that may affect understanding of certain parts of the text.
     - **High WER (over 50%)**: Poor accuracy, significant errors likely make the transcription unreliable without extensive corrections.
     
-    ❗Note: The lower the WER, the better the performance of the speech recognition system. A high WER may suggest issues with audio quality, speaker's pronunciation, or the complexity of the language used.
+    ❗Note: A high WER may suggest issues with audio quality, speaker's pronunciation, or the complexity of the language used.
     """
     
     st.info(interpretation_text)
