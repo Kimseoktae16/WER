@@ -16,4 +16,4 @@ to access the app and start recording your speech to analyze the Word Error Rate
 st.markdown(description, unsafe_allow_html=True)
 
 # Create a button in Streamlit that links to the URL
-st.markdown(f"<a href='{url}' target='_blank'><button style='color: black; background-color: #FF4B4B; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 12px;'>Go to WER Recording Space</button></a>", unsafe_allow_html=True)
+st.markdown(f"<a href='{url}' target='_blank'><button style='color: black; background-color: #99CCFF; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 12px;'>Go to WER Recording Space</button></a>", unsafe_allow_html=True)
