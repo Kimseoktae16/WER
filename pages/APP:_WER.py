@@ -1,27 +1,15 @@
+
 import streamlit as st
 import speech_recognition as sr
 from difflib import SequenceMatcher
 import re
-from pydub import AudioSegment  # Importing the library for audio conversion
-import io
 
+# Normalize text by converting to lowercase and removing non-alphanumeric characters
 def normalize_text(text):
     return re.sub(r'[^\w\s]', '', text.lower())
 
-def convert_audio_to_wav(audio_file):
-    # Convert the Streamlit UploadedFile to a byte stream
-    file_format = audio_file.name.split('.')[-1]
-    audio = AudioSegment.from_file_using_temporary_files(audio_file, format=file_format)
-    buffer = io.BytesIO()
-    audio.export(buffer, format="wav")
-    buffer.seek(0)
-    return buffer
-
+# Function to recognize speech from an audio file
 def recognize_audio(audio_file):
-    # Convert audio to WAV format if it's not a WAV file
-    if audio_file.type != "audio/wav":
-        audio_file = convert_audio_to_wav(audio_file)
-
     recognizer = sr.Recognizer()
     with sr.AudioFile(audio_file) as source:
         audio_data = recognizer.record(source)
@@ -33,8 +21,48 @@ def recognize_audio(audio_file):
     except sr.RequestError as e:
         return f"Could not request results from Google Speech Recognition service; {e}"
 
-# Streamlit interface and rest of the code
+# Calculate the Word Error Rate (WER)
+def calculate_wer(original, recognized):
+    original = normalize_text(original)
+    recognized = normalize_text(recognized)
+    original_words = original.split()
+    recognized_words = recognized.split()
+    sm = SequenceMatcher(None, original_words, recognized_words)
+    deletions, insertions, substitutions = 0, 0, 0
+    for opcode, a0, a1, b0, b1 in sm.get_opcodes():
+        if opcode == 'replace':
+            substitutions += max(a1 - a0, b1 - b0)
+        elif opcode == 'insert':
+            insertions += (b1 - b0)
+        elif opcode == 'delete':
+            deletions += (a1 - a0)
+    wer = (substitutions + deletions + insertions) / len(original_words) if original_words else 0
+    return wer * 100  # percentage
+
+def highlight_differences(original, recognized):
+    original = normalize_text(original)
+    recognized = normalize_text(recognized)
+    original_words = original.split()
+    recognized_words = recognized.split()
+    sm = SequenceMatcher(None, original_words, recognized_words)
+    result = []
+    for tag, i1, i2, j1, j2 in sm.get_opcodes():
+        if tag == 'equal':
+            result.append(' '.join(original_words[i1:i2]))  # Convert list of words to a single string
+        elif tag == 'replace':
+            original_segment = ' '.join(original_words[i1:i2])
+            recognized_segment = ' '.join(recognized_words[j1:j2])
+            result.append(f"<em>{original_segment}</em>")  # Italicize the original segment
+            result.append(f"<em>{recognized_segment}</em>")  # Italicize the recognized segment
+        elif tag == 'delete':
+            result.append(f"<em>{' '.join(original_words[i1:i2])}</em>")  # Italicize the deleted segment
+        elif tag == 'insert':
+            result.append(f"<em>{' '.join(recognized_words[j1:j2])}</em>")  # Italicize the inserted segment
+    return ' '.join(result)  # Ensure all elements are strings
+
+
 st.title('Speech Recognition Feedback Tool')
+
 with st.form("record_audio"):
     audio_file = st.file_uploader("Upload your audio file here:", type=['wav', 'mp3'])
     expected_text = st.text_area("Paste the expected text here:")
