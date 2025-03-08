@@ -50,17 +50,18 @@ def highlight_differences(original, recognized):
         if tag == 'equal':
             result.append(' '.join(original_words[i1:i2]))  # Keep equal words as they are
         elif tag == 'replace':
-            # Cross out only the replaced parts, showing both original and recognized segments
+            # Underline replaced words
             original_segment = ' '.join(original_words[i1:i2])
             recognized_segment = ' '.join(recognized_words[j1:j2])
-            result.append(f"<del>{original_segment}</del><ins>{recognized_segment}</ins>")
+            result.append(f"<u>{original_segment}</u><u>{recognized_segment}</u>")
         elif tag == 'delete':
-            # Cross out deleted segments
-            result.append(f"<del>{' '.join(original_words[i1:i2])}</del>")
+            # Put deleted (omitted) words in parentheses
+            result.append(f"({', '.join(original_words[i1:i2])})")
         elif tag == 'insert':
-            # Insert new segments not in the original
-            result.append(f"<ins>{' '.join(recognized_words[j1:j2])}</ins>")
+            # Cross out inserted words
+            result.append(f"<del>{', '.join(recognized_words[j1:j2])}</del>")
     return ' '.join(result)  # Ensure all elements are strings
+
 
 
 
