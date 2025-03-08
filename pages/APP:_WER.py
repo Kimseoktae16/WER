@@ -95,6 +95,6 @@ if st.button("Display Feedback"):
         The lower the WER, the better the performance of the speech recognition system. A high WER may suggest issues with audio quality, speaker's pronunciation, or the complexity of the language used.
         """
         
-        st.markdown(interpretation_text)
+        st.info(interpretation_text)
 
 
