@@ -1,6 +1,7 @@
 import streamlit as st
 
-st.markdown("### Speech feedback using Recognition tool")
+st.markdown("### 🍃 WER Speech Feedback: Direct Microphone Recording")
+
 # URL you want to link to
 url = 'https://mk-316-wer-recording.hf.space/'
 
