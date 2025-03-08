@@ -81,7 +81,7 @@ if st.button("Display Feedback"):
         st.write("😊 Recognized Text:", st.session_state['recognized_text'])
         st.markdown(f"📕 Expected Text: {st.session_state['feedback']}", unsafe_allow_html=True)
         st.markdown("---")
-        st.write("➡️ Word Error Rate (WER):", f"{st.session_state['wer']:.1f}%")
+        st.markdown("## ➡️ Word Error Rate (WER):", f"{st.session_state['wer']:.1f}%")
         st.markdown("---")
         
         interpretation_text = """
