@@ -99,7 +99,7 @@ if st.button("Step 2. Display Feedback"):
 
         
     interpretation_text = """
-    #### Interpreting WER Results
+    #### 🔑 Interpreting WER Results
     
     - **0% WER**: Indicates perfect accuracy, with the recognized text exactly matching the reference.
     - **Low WER (5% to 20%)**: High accuracy, with few errors relative to the number of words. The transcription is generally reliable.
