@@ -2,13 +2,25 @@ import streamlit as st
 import speech_recognition as sr
 from difflib import SequenceMatcher
 import re
+from pydub import AudioSegment  # Importing the library for audio conversion
 
 # Normalize text by converting to lowercase and removing non-alphanumeric characters
 def normalize_text(text):
     return re.sub(r'[^\w\s]', '', text.lower())
 
+# Function to convert MP3 file to WAV format
+def convert_mp3_to_wav(mp3_file):
+    sound = AudioSegment.from_mp3(mp3_file)
+    wav_file = mp3_file.name.replace(".mp3", ".wav")
+    sound.export(wav_file, format="wav")
+    return wav_file
+
 # Function to recognize speech from an audio file
 def recognize_audio(audio_file):
+    # Convert MP3 to WAV if necessary
+    if audio_file.type == "audio/mp3":
+        audio_file = convert_mp3_to_wav(audio_file)
+
     recognizer = sr.Recognizer()
     with sr.AudioFile(audio_file) as source:
         audio_data = recognizer.record(source)
@@ -38,6 +50,7 @@ def calculate_wer(original, recognized):
     wer = (substitutions + deletions + insertions) / len(original_words) if original_words else 0
     return wer * 100  # percentage
 
+# Highlight differences with emphasis
 def highlight_differences(original, recognized):
     original = normalize_text(original)
     recognized = normalize_text(recognized)
@@ -47,18 +60,10 @@ def highlight_differences(original, recognized):
     result = []
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
         if tag == 'equal':
-            result.append(' '.join(original_words[i1:i2]))  # Convert list of words to a single string
-        elif tag == 'replace':
-            original_segment = ' '.join(original_words[i1:i2])
-            recognized_segment = ' '.join(recognized_words[j1:j2])
-            result.append(f"<em>{original_segment}</em>")  # Italicize the original segment
-            result.append(f"<em>{recognized_segment}</em>")  # Italicize the recognized segment
-        elif tag == 'delete':
-            result.append(f"<em>{' '.join(original_words[i1:i2])}</em>")  # Italicize the deleted segment
-        elif tag == 'insert':
-            result.append(f"<em>{' '.join(recognized_words[j1:j2])}</em>")  # Italicize the inserted segment
-    return ' '.join(result)  # Ensure all elements are strings
-
+            result.append(' '.join(original_words[i1:i2]))
+        else:
+            result.append(f"<em>{' '.join(original_words[i1:i2])}</em>")
+    return ' '.join(result)
 
 st.title('Speech Recognition Feedback Tool')
 
