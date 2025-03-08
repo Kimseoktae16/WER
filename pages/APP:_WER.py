@@ -3,23 +3,27 @@ import speech_recognition as sr
 from difflib import SequenceMatcher
 import re
 from pydub import AudioSegment  # Importing the library for audio conversion
+import io
 
 # Normalize text by converting to lowercase and removing non-alphanumeric characters
 def normalize_text(text):
     return re.sub(r'[^\w\s]', '', text.lower())
 
-# Function to convert MP3 file to WAV format
-def convert_mp3_to_wav(mp3_file):
-    sound = AudioSegment.from_mp3(mp3_file)
-    wav_file = mp3_file.name.replace(".mp3", ".wav")
-    sound.export(wav_file, format="wav")
-    return wav_file
+# Function to convert MP3 file to WAV format and return as file-like object
+def convert_audio_to_wav(audio_file):
+    sound = AudioSegment.from_file(audio_file)
+    buffer = io.BytesIO()
+    sound.export(buffer, format="wav")
+    buffer.seek(0)
+    return buffer
 
 # Function to recognize speech from an audio file
 def recognize_audio(audio_file):
-    # Convert MP3 to WAV if necessary
     if audio_file.type == "audio/mp3":
-        audio_file = convert_mp3_to_wav(audio_file)
+        audio_file = convert_audio_to_wav(audio_file)
+    else:
+        # Convert Streamlit UploadedFile to file-like object
+        audio_file = audio_file.getvalue()
 
     recognizer = sr.Recognizer()
     with sr.AudioFile(audio_file) as source:
@@ -31,6 +35,9 @@ def recognize_audio(audio_file):
         return "Google Speech Recognition could not understand audio"
     except sr.RequestError as e:
         return f"Could not request results from Google Speech Recognition service; {e}"
+
+# Include the rest of your Streamlit code and function definitions here...
+
 
 # Calculate the Word Error Rate (WER)
 def calculate_wer(original, recognized):
