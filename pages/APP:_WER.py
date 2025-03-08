@@ -63,7 +63,7 @@ st.caption("Word Error Rate calculation: The lower the WER, the better your perf
 
 with st.form("record_audio"):
     audio_file = st.file_uploader("Upload your audio file here: 📌 .wav file format only", type=['wav'])
-    expected_text = st.text_area("Paste the expected text here:")
+    expected_text = st.text_area("Type the original text here for comparison (Expected text):")
     submit_button = st.form_submit_button("Step 1. Analyze Recording")
 
 if submit_button and audio_file and expected_text:
