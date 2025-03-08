@@ -76,20 +76,22 @@ if submit_button and audio_file and expected_text:
     st.session_state['substitutions'] = substitutions
 
 if st.button("Step 2. Display Feedback"):
-    st.write("Your speech recognized as:", st.session_state['recognized_text'])
+    st.write("⭕ Your speech recognized as:", st.session_state['recognized_text'])
+    st.markdown("---")
     if st.session_state['insertions']:
-        st.write("Insertion Errors:", ', '.join(st.session_state['insertions']))
+        st.write("🔶 Insertion Errors:", ', '.join(st.session_state['insertions']))
     else:
-        st.write("Insertion Errors: (None)")
+        st.write("🔶 Insertion Errors: (None)")
 
     if st.session_state['deletions']:
-        st.write("Deletion Errors:", ', '.join(st.session_state['deletions']))
+        st.write("🔶 Deletion Errors:", ', '.join(st.session_state['deletions']))
     else:
-        st.write("Deletion Errors: (None)")
+        st.write("🔶 Deletion Errors: (None)")
 
     if st.session_state['substitutions']:
-        st.write("Substitution Errors:", ', '.join(st.session_state['substitutions']))
+        st.write("🔶 Substitution Errors:", ', '.join(st.session_state['substitutions']))
     else:
-        st.write("Substitution Errors: (None)")
-
-    st.write("Word Error Rate (WER):", f"{st.session_state['wer']:.2f}%")
+        st.write("🔶 Substitution Errors: (None)")
+    st.markdown("---")
+    st.write("⭕ Word Error Rate (WER):", f"{st.session_state['wer']:.2f}%")
+    st.markdown("---")
