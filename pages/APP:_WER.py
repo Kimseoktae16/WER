@@ -58,7 +58,7 @@ def categorize_differences(original, recognized):
             substitutions.append(f"'{original_segment}' ---> '{recognized_segment}'")
     return insertions, deletions, substitutions
 
-st.markdown('### 🍃 WER Speech Feedback')
+st.markdown('### 🍃 WER Speech Feedback (File upload)')
 st.caption("[25.03.08] Word Error Rate calculation: The lower the WER, the better your performance. 0% means no error :-)")
 
 with st.form("record_audio"):
