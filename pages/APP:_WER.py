@@ -52,13 +52,14 @@ def highlight_differences(original, recognized):
         elif tag == 'replace':
             original_segment = ' '.join(original_words[i1:i2])
             recognized_segment = ' '.join(recognized_words[j1:j2])
-            result.append(f"<em>{original_segment}</em>")  # Italicize the original segment
-            result.append(f"<em>{recognized_segment}</em>")  # Italicize the recognized segment
+            result.append(f"<del>{original_segment}</del>")  # Crossout the original segment
+            result.append(f"<del>{recognized_segment}</del>")  # Crossout the recognized segment
         elif tag == 'delete':
-            result.append(f"<em>{' '.join(original_words[i1:i2])}</em>")  # Italicize the deleted segment
+            result.append(f"<del>{' '.join(original_words[i1:i2])}</del>")  # Crossout the deleted segment
         elif tag == 'insert':
-            result.append(f"<em>{' '.join(recognized_words[j1:j2])}</em>")  # Italicize the inserted segment
+            result.append(f"<del>{' '.join(recognized_words[j1:j2])}</del>")  # Crossout the inserted segment
     return ' '.join(result)  # Ensure all elements are strings
+
 
 
 st.title('Speech Recognition Feedback Tool')
