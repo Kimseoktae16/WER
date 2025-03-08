@@ -1,11 +1,12 @@
 import streamlit as st
 
+st.markdown("### Speech feedback using Recognition tool
 # URL you want to link to
 url = 'https://mk-316-wer-recording.hf.space/'
 
 # App Description
 description = """
-This application allows you to record your speaking directly through the web interface 
+🔮 This application allows you to record your speaking directly through the web interface 
 and immediately receive feedback on your pronunciation and speech clarity. Click the button below 
 to access the app and start recording your speech to analyze the Word Error Rate (WER) and get detailed feedback.
 """
