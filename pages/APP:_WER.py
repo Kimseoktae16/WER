@@ -66,7 +66,7 @@ st.title('Speech Recognition Feedback Tool')
 with st.form("record_audio"):
     audio_file = st.file_uploader("Upload your audio file here:", type=['wav', 'mp3'])
     expected_text = st.text_area("Paste the expected text here:")
-    submit_button = st.form_submit_button("Analyze Recording")
+    submit_button = st.form_submit_button("1. Analyze Recording")
 
 if submit_button and audio_file and expected_text:
     recognized_text = recognize_audio(audio_file)
@@ -76,7 +76,7 @@ if submit_button and audio_file and expected_text:
     st.session_state['recognized_text'] = recognized_text
     st.session_state['wer'] = wer
 
-if st.button("Display Feedback"):
+if st.button("2. Display Feedback"):
     if 'feedback' in st.session_state and 'recognized_text' in st.session_state and 'wer' in st.session_state:
         st.write("😊 Recognized Text:", st.session_state['recognized_text'])
         st.markdown(f"📕 Expected Text: {st.session_state['feedback']}", unsafe_allow_html=True)
