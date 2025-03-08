@@ -52,7 +52,10 @@ def categorize_differences(original, recognized):
         elif tag == 'delete':
             deletions.append(' '.join(original_words[i1:i2]))
         elif tag == 'replace':
-            substitutions.append(f"Original: {' '.join(original_words[i1:i2])}, Recognized: {' '.join(recognized_words[j1:j2])}")
+            # Adjusted format for substitutions
+            original_segment = ' '.join(original_words[i1:i2])
+            recognized_segment = ' '.join(recognized_words[j1:j2])
+            substitutions.append(f"'{original_segment}' ---> '{recognized_segment}'")
     return insertions, deletions, substitutions
 
 st.title('Speech Recognition Feedback Tool')
