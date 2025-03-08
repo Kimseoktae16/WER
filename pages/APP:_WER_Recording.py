@@ -1,19 +1,22 @@
 import streamlit as st
-from streamlit_bokeh_events import streamlit_bokeh_events
 from bokeh.models.widgets import Button
+from bokeh.models import CustomJS
+from streamlit_bokeh_events import streamlit_bokeh_events
 
-# Create a simple button
-button = Button(label="Click me")
+button = Button(label="Click me!", width=300)
+button.js_on_event("button_click", CustomJS(code="""
+    console.log('button clicked');
+    """))
 
-# Event handling using streamlit_bokeh_events
+# Ensure the event argument is correct as per the latest library version
 result = streamlit_bokeh_events(
-    bokeh_objects=[button],
+    bokeh_model=button,  # This might be 'bokeh_objects' or another parameter based on version
     events="button_click",
-    key="any_key",
+    key="click",
     refresh_on_update=True,
-    override_height=75,
     debounce_time=500
 )
 
 if result:
-    st.write("Button clicked")
+    if "button_click" in result:
+        st.write("Button was clicked")
