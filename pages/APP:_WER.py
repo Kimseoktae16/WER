@@ -36,11 +36,9 @@ def highlight_differences(original, recognized):
     result = []
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
         if tag == 'equal':
-            result.append(' '.join(original_words[i1:i2]))
-        elif tag == 'replace' or tag == 'delete':
-            result.append(f"*{' '.join(original_words[i1:i2])}*")
-        if tag == 'insert' or tag == 'replace':
-            result.append(f"*{' '.join(recognized_words[j1:j2])}*")
+            result.append(original_words[i1:i2])
+        else:
+            result.append(f"<em>{' '.join(original_words[i1:i2])}</em>")
     return ' '.join(result)
 
 st.title('Speech Recognition Feedback Tool')
@@ -54,7 +52,12 @@ if submit_button and audio_file and expected_text:
     recognized_text = recognize_audio(audio_file)
     wer = calculate_wer(expected_text, recognized_text)
     feedback = highlight_differences(expected_text, recognized_text)
-    if st.button("Display Feedback"):
-        st.write("Recognized Text:", recognized_text)
-        st.write("Word Error Rate (WER):", f"{wer:.2f}%")
-        st.markdown(f"Comparison: {feedback}", unsafe_allow_html=True)
+    st.session_state['feedback'] = feedback
+    st.session_state['recognized_text'] = recognized_text
+    st.session_state['wer'] = wer
+
+if st.button("Display Feedback"):
+    if 'feedback' in st.session_state and 'recognized_text' in st.session_state and 'wer' in st.session_state:
+        st.write("Recognized Text:", st.session_state['recognized_text'])
+        st.write("Word Error Rate (WER):", f"{st.session_state['wer']:.2f}%")
+        st.markdown(f"Comparison: {st.session_state['feedback']}", unsafe_allow_html=True)
