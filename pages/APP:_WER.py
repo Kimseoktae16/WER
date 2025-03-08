@@ -58,7 +58,7 @@ def categorize_differences(original, recognized):
             substitutions.append(f"'{original_segment}' ---> '{recognized_segment}'")
     return insertions, deletions, substitutions
 
-st.markdown('#### 🍃 WER Speech Feedback')
+st.markdown('### 🍃 WER Speech Feedback')
 
 with st.form("record_audio"):
     audio_file = st.file_uploader("Upload your audio file here:", type=['wav', 'mp3'])
