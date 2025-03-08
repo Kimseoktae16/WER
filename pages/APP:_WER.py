@@ -59,7 +59,7 @@ def categorize_differences(original, recognized):
     return insertions, deletions, substitutions
 
 st.markdown('### 🍃 WER Speech Feedback')
-st.caption("Word Error Rate calculation: The lower the WER, the better your performance. 0% means no error :-)")
+st.caption("[25.03.08] Word Error Rate calculation: The lower the WER, the better your performance. 0% means no error :-)")
 
 with st.form("record_audio"):
     audio_file = st.file_uploader("Upload your audio file here: 📌 .wav file format only", type=['wav'])
