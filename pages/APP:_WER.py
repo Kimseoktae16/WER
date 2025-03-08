@@ -36,10 +36,13 @@ def highlight_differences(original, recognized):
     result = []
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
         if tag == 'equal':
-            result.append(original_words[i1:i2])
-        else:
-            result.append(f"<em>{' '.join(original_words[i1:i2])}</em>")
-    return ' '.join(result)
+            result.append(' '.join(original_words[i1:i2]))  # Ensure these are strings
+        elif tag in ['replace', 'delete']:
+            result.append("<em>" + ' '.join(original_words[i1:i2]) + "</em>")  # Mark differences in italics
+        if tag == 'insert':
+            result.append("<em>" + ' '.join(recognized_words[j1:j2]) + "</em>")
+    return ' '.join(result)  # Join only string elements
+
 
 st.title('Speech Recognition Feedback Tool')
 
