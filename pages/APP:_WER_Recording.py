@@ -1,18 +1,7 @@
 import streamlit as st
-import sounddevice as sd
-import wavio
 
-def record(duration=5, fs=44100, save_path='output.wav'):
-    """Record audio for a given duration and sampling rate."""
-    recording = sd.rec(int(duration * fs), samplerate=fs, channels=2)
-    sd.wait()  # Wait until recording is finished
-    wavio.write(save_path, recording, fs, sampwidth=2)
-    return save_path
+# URL you want to link to
+url = 'https://mk-316-wer-recording.hf.space/'
 
-st.markdown("## Audio Recorder")
-record_button = st.button("Record Audio")
-
-if record_button:
-    # Assuming 5 seconds of recording
-    path = record(duration=5)
-    st.audio(path)
+# Create a button in Streamlit that links to the URL
+st.markdown(f"<a href='{url}' target='_blank'><button style='color: black; background-color: #FF4B4B; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 12px;'>Go to WER Recording Space</button></a>", unsafe_allow_html=True)
