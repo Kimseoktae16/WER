@@ -78,6 +78,8 @@ if submit_button and audio_file and expected_text:
 
 if st.button("Display Feedback"):
     if 'feedback' in st.session_state and 'recognized_text' in st.session_state and 'wer' in st.session_state:
-        st.write("Recognized Text:", st.session_state['recognized_text'])
+        st.write("😊 Recognized Text:", st.session_state['recognized_text'])
+        st.markdown(f"📕 Expected Text: {st.session_state['feedback']}", unsafe_allow_html=True)
+        st.markdown("---")
         st.write("Word Error Rate (WER):", f"{st.session_state['wer']:.2f}%")
-        st.markdown(f"Comparison: {st.session_state['feedback']}", unsafe_allow_html=True)
+
