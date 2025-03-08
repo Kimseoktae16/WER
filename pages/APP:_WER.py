@@ -5,25 +5,22 @@ import re
 from pydub import AudioSegment  # Importing the library for audio conversion
 import io
 
-# Normalize text by converting to lowercase and removing non-alphanumeric characters
 def normalize_text(text):
     return re.sub(r'[^\w\s]', '', text.lower())
 
-# Function to convert MP3 file to WAV format and return as file-like object
 def convert_audio_to_wav(audio_file):
-    sound = AudioSegment.from_file(audio_file)
+    # Convert the Streamlit UploadedFile to a byte stream
+    file_format = audio_file.name.split('.')[-1]
+    audio = AudioSegment.from_file_using_temporary_files(audio_file, format=file_format)
     buffer = io.BytesIO()
-    sound.export(buffer, format="wav")
+    audio.export(buffer, format="wav")
     buffer.seek(0)
     return buffer
 
-# Function to recognize speech from an audio file
 def recognize_audio(audio_file):
-    if audio_file.type == "audio/mp3":
+    # Convert audio to WAV format if it's not a WAV file
+    if audio_file.type != "audio/wav":
         audio_file = convert_audio_to_wav(audio_file)
-    else:
-        # Convert Streamlit UploadedFile to file-like object
-        audio_file = audio_file.getvalue()
 
     recognizer = sr.Recognizer()
     with sr.AudioFile(audio_file) as source:
@@ -36,44 +33,8 @@ def recognize_audio(audio_file):
     except sr.RequestError as e:
         return f"Could not request results from Google Speech Recognition service; {e}"
 
-# Include the rest of your Streamlit code and function definitions here...
-
-
-# Calculate the Word Error Rate (WER)
-def calculate_wer(original, recognized):
-    original = normalize_text(original)
-    recognized = normalize_text(recognized)
-    original_words = original.split()
-    recognized_words = recognized.split()
-    sm = SequenceMatcher(None, original_words, recognized_words)
-    deletions, insertions, substitutions = 0, 0, 0
-    for opcode, a0, a1, b0, b1 in sm.get_opcodes():
-        if opcode == 'replace':
-            substitutions += max(a1 - a0, b1 - b0)
-        elif opcode == 'insert':
-            insertions += (b1 - b0)
-        elif opcode == 'delete':
-            deletions += (a1 - a0)
-    wer = (substitutions + deletions + insertions) / len(original_words) if original_words else 0
-    return wer * 100  # percentage
-
-# Highlight differences with emphasis
-def highlight_differences(original, recognized):
-    original = normalize_text(original)
-    recognized = normalize_text(recognized)
-    original_words = original.split()
-    recognized_words = recognized.split()
-    sm = SequenceMatcher(None, original_words, recognized_words)
-    result = []
-    for tag, i1, i2, j1, j2 in sm.get_opcodes():
-        if tag == 'equal':
-            result.append(' '.join(original_words[i1:i2]))
-        else:
-            result.append(f"<em>{' '.join(original_words[i1:i2])}</em>")
-    return ' '.join(result)
-
+# Streamlit interface and rest of the code
 st.title('Speech Recognition Feedback Tool')
-
 with st.form("record_audio"):
     audio_file = st.file_uploader("Upload your audio file here:", type=['wav', 'mp3'])
     expected_text = st.text_area("Paste the expected text here:")
