@@ -81,5 +81,19 @@ if st.button("Display Feedback"):
         st.write("😊 Recognized Text:", st.session_state['recognized_text'])
         st.markdown(f"📕 Expected Text: {st.session_state['feedback']}", unsafe_allow_html=True)
         st.markdown("---")
-        st.write("Word Error Rate (WER):", f"{st.session_state['wer']:.1f}%")
+        st.write("➡️ Word Error Rate (WER):", f"{st.session_state['wer']:.1f}%")
+
+        interpretation_text = """
+        #### Interpreting WER Results
+        
+        - **0% WER**: Indicates perfect accuracy, with the recognized text exactly matching the reference.
+        - **Low WER (5% to 20%)**: High accuracy, with few errors relative to the number of words. The transcription is generally reliable.
+        - **Moderate WER (20% to 50%)**: Moderate accuracy, noticeable errors that may affect understanding of certain parts of the text.
+        - **High WER (over 50%)**: Poor accuracy, significant errors likely make the transcription unreliable without extensive corrections.
+        
+        The lower the WER, the better the performance of the speech recognition system. A high WER may suggest issues with audio quality, speaker's pronunciation, or the complexity of the language used.
+        """
+        
+        st.markdown(interpretation_text)
+
 
