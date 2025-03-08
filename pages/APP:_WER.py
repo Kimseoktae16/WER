@@ -1,4 +1,3 @@
-
 import streamlit as st
 import speech_recognition as sr
 from difflib import SequenceMatcher
@@ -39,31 +38,26 @@ def calculate_wer(original, recognized):
     wer = (substitutions + deletions + insertions) / len(original_words) if original_words else 0
     return wer * 100  # percentage
 
-def highlight_differences(original, recognized):
+# Highlight differences and categorize them
+def categorize_differences(original, recognized):
     original = normalize_text(original)
     recognized = normalize_text(recognized)
     original_words = original.split()
     recognized_words = recognized.split()
     sm = SequenceMatcher(None, original_words, recognized_words)
-    result = []
+    insertions = []
+    deletions = []
+    substitutions = []
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
-        if tag == 'equal':
-            result.append(' '.join(original_words[i1:i2]))  # Keep equal words as they are
+        if tag == 'insert':
+            insertions.append(' '.join(recognized_words[j1:j2]))
+        elif tag == 'delete':
+            deletions.append(' '.join(original_words[i1:i2]))
         elif tag == 'replace':
-            # Underline replaced words
             original_segment = ' '.join(original_words[i1:i2])
             recognized_segment = ' '.join(recognized_words[j1:j2])
-            result.append(f"<u>{original_segment}</u><u>{recognized_segment}</u>")
-        elif tag == 'delete':
-            # Put deleted (omitted) words in parentheses
-            result.append(f"({', '.join(original_words[i1:i2])})")
-        elif tag == 'insert':
-            # Cross out inserted words
-            result.append(f"<del>{', '.join(recognized_words[j1:j2])}</del>")
-    return ' '.join(result)  # Ensure all elements are strings
-
-
-
+            substitutions.append(f"Original: {original_segment}, Recognized: {recognized_segment}")
+    return insertions, deletions, substitutions
 
 st.title('Speech Recognition Feedback Tool')
 
@@ -75,30 +69,16 @@ with st.form("record_audio"):
 if submit_button and audio_file and expected_text:
     recognized_text = recognize_audio(audio_file)
     wer = calculate_wer(expected_text, recognized_text)
-    feedback = highlight_differences(expected_text, recognized_text)
-    st.session_state['feedback'] = feedback
+    insertions, deletions, substitutions = categorize_differences(expected_text, recognized_text)
     st.session_state['recognized_text'] = recognized_text
     st.session_state['wer'] = wer
+    st.session_state['insertions'] = insertions
+    st.session_state['deletions'] = deletions
+    st.session_state['substitutions'] = substitutions
 
 if st.button("Step 2. Display Feedback"):
-    if 'feedback' in st.session_state and 'recognized_text' in st.session_state and 'wer' in st.session_state:
-        st.write("😊 Recognized Text:", st.session_state['recognized_text'])
-        st.markdown(f"📕 Expected Text: {st.session_state['feedback']}", unsafe_allow_html=True)
-        st.markdown("---")
-        st.write("➡️ Word Error Rate (WER):", f"{st.session_state['wer']:.1f}%")
-        st.markdown("---")
-        
-        interpretation_text = """
-        #### Interpreting WER Results
-        
-        - **0% WER**: Indicates perfect accuracy, with the recognized text exactly matching the reference.
-        - **Low WER (5% to 20%)**: High accuracy, with few errors relative to the number of words. The transcription is generally reliable.
-        - **Moderate WER (20% to 50%)**: Moderate accuracy, noticeable errors that may affect understanding of certain parts of the text.
-        - **High WER (over 50%)**: Poor accuracy, significant errors likely make the transcription unreliable without extensive corrections.
-        
-        The lower the WER, the better the performance of the speech recognition system. A high WER may suggest issues with audio quality, speaker's pronunciation, or the complexity of the language used.
-        """
-        
-        st.info(interpretation_text)
-
-
+    st.write("Your speech recognized as:", st.session_state['recognized_text'])
+    st.write("Insertion Errors:", ', '.join(st.session_state['insertions']))
+    st.write("Deletion Errors:", ', '.join(st.session_state['deletions']))
+    st.write("Substitution Errors:", ', '.join(st.session_state['substitutions']))
+    st.write("Word Error Rate (WER):", f"{st.session_state['wer']:.2f}%")
