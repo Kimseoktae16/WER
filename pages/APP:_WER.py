@@ -38,7 +38,6 @@ def calculate_wer(original, recognized):
     wer = (substitutions + deletions + insertions) / len(original_words) if original_words else 0
     return wer * 100  # percentage
 
-# Highlight differences with emphasis
 def highlight_differences(original, recognized):
     original = normalize_text(original)
     recognized = normalize_text(recognized)
@@ -48,10 +47,18 @@ def highlight_differences(original, recognized):
     result = []
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
         if tag == 'equal':
-            result.append(original_words[i1:i2])
-        else:
-            result.append(f"<em>{' '.join(original_words[i1:i2])}</em>")
-    return ' '.join(result)
+            result.append(' '.join(original_words[i1:i2]))  # Convert list of words to a single string
+        elif tag == 'replace':
+            original_segment = ' '.join(original_words[i1:i2])
+            recognized_segment = ' '.join(recognized_words[j1:j2])
+            result.append(f"<em>{original_segment}</em>")  # Italicize the original segment
+            result.append(f"<em>{recognized_segment}</em>")  # Italicize the recognized segment
+        elif tag == 'delete':
+            result.append(f"<em>{' '.join(original_words[i1:i2])}</em>")  # Italicize the deleted segment
+        elif tag == 'insert':
+            result.append(f"<em>{' '.join(recognized_words[j1:j2])}</em>")  # Italicize the inserted segment
+    return ' '.join(result)  # Ensure all elements are strings
+
 
 st.title('Speech Recognition Feedback Tool')
 
