@@ -2,3 +2,5 @@ streamlit
 speechrecognition
 pydub
 streamlit-bokeh-events
+sounddevice 
+wavio
